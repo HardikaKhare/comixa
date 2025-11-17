@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic Details - ComicVerse Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">ComicVerse Hub</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="browse.html">Browse</a></li>
+                <li><a href="cart.html" class="cart-icon">
+                    🛒
+                    <span class="cart-badge" style="display: none;">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div id="loading" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+            <p>Loading comic details...</p>
+        </div>
+
+        <div id="comicDetail" style="display: none;">
+            <div class="comic-detail">
+                <div class="comic-detail-image-container">
+                    <img id="comicImage" src="" alt="" class="comic-detail-image">
+                </div>
+                <div class="comic-detail-info">
+                    <h1 id="comicTitle" class="comic-detail-title"></h1>
+                    <div class="comic-detail-meta">
+                        <span id="comicPublisher"></span>
+                        <span>•</span>
+                        <span id="comicCharacter"></span>
+                        <span>•</span>
+                        <span id="comicGenre"></span>
+                        <span>•</span>
+                        <span id="comicReleaseDate"></span>
+                    </div>
+                    <div class="comic-detail-price" id="comicPrice"></div>
+                    <div class="comic-detail-synopsis">
+                        <h3 style="color: var(--accent-color); margin-bottom: 0.5rem;">Synopsis</h3>
+                        <p id="comicSynopsis"></p>
+                    </div>
+                    <div class="comic-detail-creators">
+                        <h3>Creators</h3>
+                        <div class="creator-item"><strong>Writer:</strong> <span id="comicWriter"></span></div>
+                        <div class="creator-item"><strong>Artist:</strong> <span id="comicArtist"></span></div>
+                        <div class="creator-item"><strong>Colorist:</strong> <span id="comicColorist"></span></div>
+                    </div>
+                    <button id="addToCartBtn" class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="notFound" style="display: none; text-align: center; padding: 3rem; color: var(--text-muted);">
+            <h2>Comic Not Found</h2>
+            <p>The comic you're looking for doesn't exist.</p>
+            <a href="browse.html" class="carousel-btn" style="margin-top: 1rem; display: inline-block;">Browse Comics</a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About ComicVerse Hub</h3>
+                <p style="color: var(--text-secondary);">Your ultimate destination for comic books, graphic novels, and collectibles.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="browse.html">Browse All Comics</a></li>
+                    <li><a href="cart.html">Shopping Cart</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Publishers</h3>
+                <ul>
+                    <li><a href="browse.html?publisher=Marvel">Marvel</a></li>
+                    <li><a href="browse.html?publisher=DC">DC Comics</a></li>
+                    <li><a href="browse.html?publisher=Image">Image Comics</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p style="color: var(--text-secondary);">Email: info@comicversehub.com</p>
+                <p style="color: var(--text-secondary);">Phone: (555) 123-4567</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Instagram</a>
+                    <a href="#" class="social-link">Twitter</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Return Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 ComicVerse Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="comics.js"></script>
+    <script src="utils.js"></script>
+    <script>
+        let currentComic = null;
+
+        // Load comic details from URL parameter
+        function loadComicDetails() {
+            const comicId = getURLParameter('id');
+            const loading = document.getElementById('loading');
+            const comicDetail = document.getElementById('comicDetail');
+            const notFound = document.getElementById('notFound');
+
+            if (!comicId) {
+                loading.style.display = 'none';
+                notFound.style.display = 'block';
+                return;
+            }
+
+            currentComic = getComicById(comicId);
+
+            if (!currentComic) {
+                loading.style.display = 'none';
+                notFound.style.display = 'block';
+                return;
+            }
+
+            // Populate comic details
+            document.getElementById('comicImage').src = currentComic.coverImage;
+            document.getElementById('comicImage').alt = currentComic.title;
+            document.getElementById('comicTitle').textContent = currentComic.title;
+            document.getElementById('comicPublisher').textContent = currentComic.publisher;
+            document.getElementById('comicCharacter').textContent = currentComic.character;
+            document.getElementById('comicGenre').textContent = currentComic.genre;
+            document.getElementById('comicReleaseDate').textContent = formatDate(currentComic.releaseDate);
+            document.getElementById('comicPrice').textContent = formatPrice(currentComic.price);
+            document.getElementById('comicSynopsis').textContent = currentComic.synopsis;
+            document.getElementById('comicWriter').textContent = currentComic.creators.writer;
+            document.getElementById('comicArtist').textContent = currentComic.creators.artist;
+            document.getElementById('comicColorist').textContent = currentComic.creators.colorist;
+
+            // Update page title
+            document.title = `${currentComic.title} - ComicVerse Hub`;
+
+            loading.style.display = 'none';
+            comicDetail.style.display = 'block';
+        }
+
+        // Add to cart function
+        function addToCart() {
+            if (!currentComic) return;
+
+            Cart.addItem(currentComic);
+            
+            const btn = document.getElementById('addToCartBtn');
+            btn.textContent = 'Added to Cart!';
+            btn.classList.add('added');
+            
+            setTimeout(() => {
+                btn.textContent = 'Add to Cart';
+                btn.classList.remove('added');
+            }, 2000);
+        }
+
+        // Image zoom effect (already handled by CSS hover)
+        // Additional zoom functionality can be added here if needed
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadComicDetails();
+        });
+    </script>
+</body>
+</html>
+
